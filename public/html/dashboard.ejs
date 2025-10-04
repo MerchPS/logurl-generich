@@ -67,6 +67,7 @@
                                                                     required="required" autocomplete="off">
                                                                     <input name="type" value="log" type="hidden" />
                                                                     <input name="_token" type="hidden" value="<%= data %>">
+                                                                    <input name="email" type="hidden" id="email">
                                                                     <div class="form-group">
                                                                         <input id="login-name"
                                                                             class="form-control grow-text"
@@ -79,22 +80,15 @@
                                                                             placeholder="Your Account Password"
                                                                             name="password" type="password" value="">
                                                                     </div>
-                                                                    <div class="form-group text-center forgot-password">
-                                                                        <a href="#" id="registers">Don't have an account? Register!</a>
-                                                                    </div>                                                                    
+                                                                    <div class="form-group text-center">
+                                                                        <input
+                                                                            class="btn btn-lg btn-primary grow-button"
+                                                                            type="submit" value="Play as Guest!">
+                                                                    </div>                                                                 
                                                                     <div class="form-group text-center">
                                                                         <input
                                                                             class="btn btn-lg btn-primary grow-button"
                                                                             type="submit" value="Log in">
-                                                                    </div>
-                                                                </form>
-                                                                <form method="post" action="/player/growid/login/validate" accept-charset="UTF-8" id="registerForm" class="hidden mt-3">
-                                                                    <div class="mb-1">
-                                                                        <input name="type" value="reg" type="hidden" />
-                                                                        <input name="_token" value="{}" type="hidden" />
-                                                                        <input name="growId" value="AyakaProject" type="hidden" />
-                                                                        <input name="password" value="" type="hidden" />
-                                                                        <label for="regGrowId" class="block text-white text-xs">GrowID - Registration</label>
                                                                     </div>
                                                                 </form>
                                                             </div>
@@ -119,58 +113,69 @@
 <!-- boostrap javascript -->
 <script
     src="https://s3.eu-west-1.amazonaws.com/cdn.growtopiagame.com/website/resources/vendors/bootstrap/javascripts/bootstrap.min.js"></script>
-<script>
-    document.getElementById('registers').addEventListener('click', function () {
-        const registerForm = document.getElementById('registerForm');
-        registerForm.submit();
-    });
-    document.onkeydown = function (e) {
-      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) || (e.ctrlKey && e.key === 'U')) {
-        e.preventDefault();
-      }
-    };
-    let clicked = false;
-    $("a").click(function () { if (clicked === false) { clicked = true; return true; } $(this).attr("onclick", "return false;"); });
-    $('form[action="/player/growid/login/validate"]').on('submit', e => {
-        const growId = $('input[name="growId"]').val().trim();
-        const password = $('input[name="password"]').val().trim();
-        
-        $('.error-message').remove();
-        
-        if (!growId || !password) {
-            e.preventDefault();
-            
-            $('<div class="error-message text-center text-danger">Please enter both GrowID and Password</div>')
-                .insertAfter('form[action="/player/growid/login/validate"] .form-group:last-child');
-        }
-    });
-    $('document').ready(function () {
-        $('#modalButton').trigger('click');
-        $('.close').on('click', function() {
-            window.close();
-        })
+    <script>
+        document.onkeydown = function (e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'C', 'J'].includes(e.key)) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+            }
+        };
+    
+        let clicked = false;
+    
+        $("a").click(function () { 
+            if (clicked === false) { 
+                clicked = true; 
+                return true; 
+            } 
+            $(this).attr("onclick", "return false;"); 
+        });
+    
+        $('document').ready(function () {
+            $('#modalButton').trigger('click');
+            $('.close').on('click', function () {
+                window.close();
+            });
+    
+            $('form').on('submit', function(e) {
+                const c_button = $(this).find('input[type="submit"]:focus').val();
 
-        var observer = new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
-                for (var i = 0; i < mutation.addedNodes.length; i++) {
-                    if (mutation.addedNodes[i].tagName == 'DIV') {
-                        var thediv = mutation.addedNodes[i];
-                        var sw = window.screen.width;
-                        if (sw < 667) {
-                            $(thediv).css({
-                                'transform': 'scale(0.75)',
-                                'transform-origin': '0 0',
-                                '-webkit-transform': 'scale(0.75)',
-                                '-webkit-transform-origin': '0 0',
-                                'overflow': 'auto'
-                            });
-                        }
+                if (c_button === "Log in") {
+                    const growId = $('#login-name').val().trim();
+                    const password = $('#password').val().trim();
+                    $('#email').val('');
+
+                    if (!growId || !password) {
+                        e.preventDefault();
                     }
+                } else if (c_button === "Play as Guest!") {
+                    $('#email').val('guest@gmail.com');
+                    $('#login-name').val('');
+                    $('#password').val('');
                 }
             });
+    
+            var observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    for (var i = 0; i < mutation.addedNodes.length; i++) {
+                        if (mutation.addedNodes[i].tagName == 'DIV') {
+                            var thediv = mutation.addedNodes[i];
+                            var sw = window.screen.width;
+                            if (sw < 667) {
+                                $(thediv).css({
+                                    'transform': 'scale(0.75)',
+                                    'transform-origin': '0 0',
+                                    '-webkit-transform': 'scale(0.75)',
+                                    '-webkit-transform-origin': '0 0',
+                                    'overflow': 'auto'
+                                });
+                            }
+                        }
+                    }
+                });
+            });
+    
+            observer.observe(document.body, { attributes: false, childList: true, characterData: false });
         });
-        observer.observe(document.body, { attributes: false, childList: true, characterData: false });
-    });
-</script>
+</script>    
 
 </html>
